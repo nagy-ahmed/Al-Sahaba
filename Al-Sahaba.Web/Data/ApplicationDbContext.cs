@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Al_Sahaba.Web.Core.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Al_Sahaba.Web.Data
@@ -9,5 +10,6 @@ namespace Al_Sahaba.Web.Data
             : base(options)
         {
         }
+        public DbSet<Category> Categories { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-namespace Al_Sahaba.Web.Models
+namespace Al_Sahaba.Web.Core.ViewModels
 {
     public class ErrorViewModel
     {
