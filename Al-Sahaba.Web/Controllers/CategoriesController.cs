@@ -1,6 +1,7 @@
 ﻿using Al_Sahaba.Web.Core.Models;
 using Al_Sahaba.Web.Core.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Al_Sahaba.Web.Controllers
 {
@@ -16,7 +17,7 @@ namespace Al_Sahaba.Web.Controllers
 		public IActionResult Index()
 		{
 			//todo : use viewModel
-			var categories = _context.Categories.ToList();
+			var categories = _context.Categories.AsNoTracking().ToList();
 			return View(categories);
 		}
 		[HttpGet]
@@ -40,6 +41,9 @@ namespace Al_Sahaba.Web.Controllers
 
             _context.Categories.Add(category);
             _context.SaveChanges();
+
+            TempData["Message"] = "Category has been added successfully";
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -78,8 +82,23 @@ namespace Al_Sahaba.Web.Controllers
             category.Name = model.Name;
             category.LastUpdatedOn = DateTime.Now;
             _context.SaveChanges();
+            TempData["Message"] = "Category has been edited successfully";
             return RedirectToAction(nameof(Index));
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ToggleStatus(int id)
+        {
+            var category = _context.Categories.Find(id);
+            if (category is null)
+            {
+                return NotFound();
+            }
 
+            category.IsDeleted = !category.IsDeleted;
+            category.LastUpdatedOn = DateTime.Now;
+            _context.SaveChanges();
+            return Ok(category.LastUpdatedOn.ToString());
+        }
     }
 }

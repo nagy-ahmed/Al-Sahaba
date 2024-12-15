@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<Category>
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery antiforgery
 
 @{
     ViewData["Title"] = "Categories";
@@ -54,6 +55,8 @@
         }
         else
         {
+            <div>
+            </div>
             <div class="table-responsive">
                 <table class="table table-row-dashed table-row-gray-300 gy-7">
                     <thead>
@@ -68,19 +71,55 @@
                     <tbody>
                         @foreach (var category in Model)
                         {
-                            <tr>    
-                                <td>@category.Name</td>
+                            <tr>
+                                <td class="js-name">@category.Name</td>
                                 <td>
-                                    <span class="badge @(category.IsDeleted ? "badge-light-danger" : "badge-light-success")">
+                                    <span class="badge @(category.IsDeleted ? "badge-light-danger" : "badge-light-success") js-status">
                                         @(category.IsDeleted ? "Deleted" : "Available")
                                     </span>
                                 </td>
                                 <td>@category.CreatedOn</td>
-                                <td>@category.LastUpdatedOn</td>
+                                <td class="js-last-updated-on">@category.LastUpdatedOn</td>
                                 <td>
-                                    <a class="btn btn-sm btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary" asp-controller="Categories" asp-action="Edit" asp-route-id="@category.Id">
-                                        Edit
-                                    </a>
+                                    @*  <a class="btn btn-sm btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary" asp-controller="Categories" asp-action="Edit" asp-route-id="@category.Id">
+                            Edit
+                            </a> *@
+
+                                    <div class="card-toolbar">
+                                        <!--begin::Menu-->
+                                        <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                            <!--begin::Svg Icon | path: icons/duotune/general/gen024.svg-->
+                                            <span class="svg-icon svg-icon-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24">
+                                                    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                        <rect x="5" y="5" width="5" height="5" rx="1" fill="currentColor"></rect>
+                                                        <rect x="14" y="5" width="5" height="5" rx="1" fill="currentColor" opacity="0.3"></rect>
+                                                        <rect x="5" y="14" width="5" height="5" rx="1" fill="currentColor" opacity="0.3"></rect>
+                                                        <rect x="14" y="14" width="5" height="5" rx="1" fill="currentColor" opacity="0.3"></rect>
+                                                    </g>
+                                                </svg>
+                                            </span>
+                                            <!--end::Svg Icon-->
+                                        </button>
+                                        <!--begin::Menu 3-->
+                                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3" data-kt-menu="true" style="z-index: 107;">
+                                            <!--begin::Menu item-->
+                                            <div class="menu-item px-3">
+                                                <a class="menu-link px-3" asp-controller="Categories" asp-action="Edit" asp-route-id="@category.Id">Edit</a>
+                                            </div>
+                                            <!--end::Menu item-->
+                                            <!--begin::Menu item-->
+                                            <div class="menu-item px-3">
+                                                <a href="javascript:;" class="menu-link flex-stack px-3 js-toggle-status" data-id="@category.Id">
+                                                    Toggle Status
+                                                </a>
+                                            </div>
+                                            <!--end::Menu item-->
+                                        </div>
+                                        <!--end::Menu 3-->
+                                        <!--end::Menu-->
+                                    </div>
+
                                 </td>
                             </tr>
                         }
@@ -92,3 +131,57 @@
         }
     </div>
 </div>
+@* @Html.AntiForgeryToken() *@
+<input type="hidden" name="__RequestVerificationToken" value="@antiforgery.GetAndStoreTokens(Context).RequestToken" />
+
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+            $(".js-toggle-status").on('click', function () {
+                var btn = $(this);
+                bootbox.confirm({
+                    message: `Are you sure you want to toggle <span class="text-danger fw-bold">${btn.parents('tr').find('.js-name').text()}</span> Statue?`,
+                    buttons: {
+                        confirm: {
+                            label: 'Yes',
+                            className: 'btn-danger'
+                        },
+                        cancel: {
+                            label: 'No',
+                            className: 'btn-secondary'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            $.post({
+                                url: '/Categories/ToggleStatus/' + btn.data('id'),
+                                data: {
+                                    '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                                },
+                                success: function () {
+                                    var row = btn.parents('tr');
+
+                                    var status = row.find('.js-status');
+                                    var newStatus = status.text().trim() === 'Available' ? 'Deleted' : 'Available';
+                                    status.text(newStatus).toggleClass('badge-light-success badge-light-danger');
+
+                                    var lastUpdatedOn = row.find('.js-last-updated-on');
+                                    lastUpdatedOn.text(new Date().toLocaleString());
+
+                                    row.addClass('animate__animated animate__flash');
+
+                                    showMessage('success', 'Success', 'Category status has been toggled successfully!');
+
+                                },
+                                error: function () {
+                                    showMessage('error', 'Oops...', 'An error occurred while toggling category status!');
+                                }
+                            })
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}
