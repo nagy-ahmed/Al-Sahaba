@@ -27,6 +27,10 @@
         "sweetalert2.css",
         "sweetalert2.min.css"
       ]
+    },
+    {
+      "library": "jquery-ajax-unobtrusive@3.2.6",
+      "destination": "wwwroot/lib/jquery-ajax-unobtrusive/"
     }
   ]
 }

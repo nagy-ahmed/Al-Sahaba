@@ -1,7 +1,9 @@
 ﻿using Al_Sahaba.Web.Core.Models;
 using Al_Sahaba.Web.Core.ViewModels;
+using Al_Sahaba.Web.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace Al_Sahaba.Web.Controllers
 {
@@ -21,9 +23,10 @@ namespace Al_Sahaba.Web.Controllers
 			return View(categories);
 		}
 		[HttpGet]
-		public IActionResult Create()
+        [AjaxOnly]
+        public IActionResult Create()
 		{
-            return View("Form");
+            return PartialView("_Form");
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -31,7 +34,7 @@ namespace Al_Sahaba.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View("Form", model);
+                return BadRequest();
             }
 
             var category = new Category
@@ -42,12 +45,12 @@ namespace Al_Sahaba.Web.Controllers
             _context.Categories.Add(category);
             _context.SaveChanges();
 
-            TempData["Message"] = "Category has been added successfully";
 
-            return RedirectToAction(nameof(Index));
+            return PartialView("_CategoryRow",category);
         }
 
         [HttpGet]
+        [AjaxOnly]
         public IActionResult Edit(int id)
         {
             var category = _context.Categories.Find(id);
@@ -62,7 +65,7 @@ namespace Al_Sahaba.Web.Controllers
                 Name = category.Name
             };
 
-            return View("Form",model);
+            return PartialView("_Form",model);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -70,7 +73,7 @@ namespace Al_Sahaba.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View("Form", model);
+                return BadRequest();
             }
 
             var category = _context.Categories.Find(model.Id);
@@ -82,8 +85,7 @@ namespace Al_Sahaba.Web.Controllers
             category.Name = model.Name;
             category.LastUpdatedOn = DateTime.Now;
             _context.SaveChanges();
-            TempData["Message"] = "Category has been edited successfully";
-            return RedirectToAction(nameof(Index));
+            return PartialView("_CategoryRow", category);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
