@@ -1,6 +1,9 @@
 ﻿
+using Microsoft.EntityFrameworkCore;
+
 namespace Al_Sahaba.Web.Core.Models
 {
+	[Index(nameof(Name), IsUnique = true)]
 	public class Category
 	{
         public int Id { get; set; }

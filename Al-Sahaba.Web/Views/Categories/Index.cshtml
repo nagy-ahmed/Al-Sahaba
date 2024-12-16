@@ -1,13 +1,16 @@
-﻿@model IEnumerable<Category>
+﻿@model IEnumerable<CategoryViewModel>
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery antiforgery
 
 @{
     ViewData["Title"] = "Categories";
 }
 
-
-<div class="card shadow-sm">
-    <div class="card-header">
+@section Styles
+{
+    <link href="~/assets/plugins/datatables/datatables.bundle.css" rel="stylesheet" />
+}
+<div class="alert alert-primary border border-primary border-1 border-dashed d-flex align-items-center p-5 mb-10 justify-content-between">
+    <div>
         <h3 class="card-title">
             <div class="symbol symbol-40px me-4">
                 <div class="symbol-label fs-2 fw-semibold text-success">
@@ -22,117 +25,100 @@
 
             Categories
         </h3>
-
-        <div class="card-toolbar">
-            <a class="btn btn-sm btn-primary js-render-modal" data-title="Add Category" data-url="categories/create">
-                <i class="bi bi-plus-square-dotted"></i>
-                Add
-            </a>
-        </div>
     </div>
-    <div class="card-body">
 
-        @if (!Model.Any())
-        {
-            <div class="alert alert-dismissible bg-light-warning border border-warning border-dashed d-flex flex-column flex-sm-row w-100 p-5 mb-10">
-                <!--begin::Icon-->
-                <!--begin::Svg Icon | path: icons/duotune/communication/com003.svg-->
-                <span class="svg-icon svg-icon-2hx svg-icon-warning me-4 mb-5 mb-sm-0">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect opacity="0.3" x="2" y="2" width="20" height="20" rx="10" fill="currentColor" />
-                        <rect x="11" y="14" width="7" height="2" rx="1" transform="rotate(-90 11 14)" fill="currentColor" />
-                        <rect x="11" y="17" width="2" height="2" rx="1" transform="rotate(-90 11 17)" fill="currentColor" />
-                    </svg>
+    <div class="card-toolbar">
+        <a class="btn btn-sm btn-primary js-render-modal" data-title="Add Category" data-url="categories/create">
+            <i class="bi bi-plus-square-dotted"></i>
+            Add
+        </a>
+    </div>
+</div>
+
+
+
+
+<div class="card shadow-sm">
+    <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+        <div class="card-title">
+            <div class="d-flex align-items-center position-relative my-1">
+                <span class="svg-icon fs-1 position-absolute ms-4">
+                    @* saerch icon *@
+                    <i class="fa-solid fa-magnifying-glass"></i>
                 </span>
-                <!--end::Svg Icon-->
-                <!--end::Icon-->
-                <!--begin::Content-->
-                <div class="d-flex flex-column pe-0 pe-sm-10 align-self-center">
-                    <h5 class="mb-1">No Categories found!</h5>
+                <input type="text" data-kt-filter="search" class="form-control form-control-solid w-250px ps-14" placeholder="Search..." />
+            </div>
+            <div id="kt_datatable_example_1_export" class="d-none"></div>
+        </div>
+        <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+            <button type="button" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                <i class="fa-solid fa-download"></i>
+                Export
+            </button>
+            <div id="kt_datatable_example_export_menu" class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-200px py-4" data-kt-menu="true">
+                <div class="menu-item px-3">
+                    <a href="#" class="menu-link px-3" data-kt-export="copy">
+                        Copy to clipboard
+                    </a>
                 </div>
-                <!--end::Content-->
+                <div class="menu-item px-3">
+                    <a href="#" class="menu-link px-3" data-kt-export="excel">
+                        Export as Excel
+                    </a>
+                </div>
+                <div class="menu-item px-3">
+                    <a href="#" class="menu-link px-3" data-kt-export="csv">
+                        Export as CSV
+                    </a>
+                </div>
+                <div class="menu-item px-3">
+                    <a href="#" class="menu-link px-3" data-kt-export="pdf">
+                        Export as PDF
+                    </a>
+                </div>
             </div>
-        }
-        else
-        {
-            <div>
-            </div>
+
+
+            <div id="kt_datatable_example_buttons" class="d-none"></div>
+
+        </div>
+
+
+    </div>
+    <div class="card-body pt-0">
+
             <div class="table-responsive">
-                <table class="table table-row-dashed table-row-gray-300 gy-7">
+                <table class="table table-row-dashed table-row-gray-300 gy-7 js-datatables" data-document-title="Categories">
                     <thead>
                         <tr class="fw-bold fs-6 text-gray-800">
                             <th>Name</th>
                             <th>Status</th>
                             <th>Created On</th>
                             <th>Last Updated On</th>
-                            <th>Action</th>
+                            <th class="js-no-export">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var category in Model)
                         {
-                            <partial name="_CategoryRow" model="@category"/>
+                            <partial name="_CategoryRow" model="@category" />
                         }
                     </tbody>
                 </table>
             </div>
 
 
-        }
+        
     </div>
 </div>
 @* @Html.AntiForgeryToken() *@
 <input type="hidden" name="__RequestVerificationToken" value="@antiforgery.GetAndStoreTokens(Context).RequestToken" />
 
+@section Plugins
+{
+    <script src="~/assets/plugins/datatables/datatables.bundle.js"></script>
+}
 @section Scripts
 {
     <partial name="_ValidationScriptsPartial" />
-    <script>
-        $(document).ready(function () {
-            $("body").delegate('.js-toggle-status','click', function () {
-                var btn = $(this);
-                bootbox.confirm({
-                    message: `Are you sure you want to toggle <span class="text-danger fw-bold">${btn.parents('tr').find('.js-name').text()}</span> Statue?`,
-                    buttons: {
-                        confirm: {
-                            label: 'Yes',
-                            className: 'btn-danger'
-                        },
-                        cancel: {
-                            label: 'No',
-                            className: 'btn-secondary'
-                        }
-                    },
-                    callback: function (result) {
-                        if (result) {
-                            $.post({
-                                url: '/Categories/ToggleStatus/' + btn.data('id'),
-                                data: {
-                                    '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
-                                },
-                                success: function () {
-                                    var row = btn.parents('tr');
-
-                                    var status = row.find('.js-status');
-                                    var newStatus = status.text().trim() === 'Available' ? 'Deleted' : 'Available';
-                                    status.text(newStatus).toggleClass('badge-light-success badge-light-danger');
-
-                                    var lastUpdatedOn = row.find('.js-last-updated-on');
-                                    lastUpdatedOn.text(new Date().toLocaleString());
-
-                                    row.addClass('animate__animated animate__flash');
-
-                                    showMessage(1, 'Category status has been toggled successfully!');
-
-                                },
-                                error: function () {
-                                    showMessage(0, 'An error occurred while toggling category status!');
-                                }
-                            })
-                        }
-                    }
-                });
-            });
-        });
-    </script>
 }

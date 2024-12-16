@@ -1,33 +1,28 @@
-﻿using Al_Sahaba.Web.Core.Models;
-using Al_Sahaba.Web.Core.ViewModels;
-using Al_Sahaba.Web.Filters;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
-
-namespace Al_Sahaba.Web.Controllers
+﻿namespace Al_Sahaba.Web.Controllers
 {
-	public class CategoriesController : Controller
-	{
-		private readonly ApplicationDbContext _context;
+    public class CategoriesController : Controller
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
+        public CategoriesController(ApplicationDbContext context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
 
-		public CategoriesController(ApplicationDbContext context)
-		{
-			_context = context;
-		}
+        public IActionResult Index()
+        {
+            var categories = _context.Categories.AsNoTracking().ToList();
+            return View(_mapper.Map<IEnumerable<CategoryViewModel>>(categories));
+        }
 
-		public IActionResult Index()
-		{
-			//todo : use viewModel
-			var categories = _context.Categories.AsNoTracking().ToList();
-			return View(categories);
-		}
-		[HttpGet]
+        [HttpGet]
         [AjaxOnly]
         public IActionResult Create()
-		{
+        {
             return PartialView("_Form");
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(CategoryFormViewModel model)
@@ -37,16 +32,14 @@ namespace Al_Sahaba.Web.Controllers
                 return BadRequest();
             }
 
-            var category = new Category
-            {
-                Name = model.Name
-            };
+            var category = _mapper.Map<Category>(model);
 
             _context.Categories.Add(category);
             _context.SaveChanges();
 
+            var viewModel = _mapper.Map<CategoryViewModel>(category);
 
-            return PartialView("_CategoryRow",category);
+            return PartialView("_CategoryRow", viewModel);
         }
 
         [HttpGet]
@@ -59,14 +52,11 @@ namespace Al_Sahaba.Web.Controllers
                 return NotFound();
             }
 
-            var model = new CategoryFormViewModel
-            {
-                Id = category.Id,
-                Name = category.Name
-            };
+            var formModel = _mapper.Map<CategoryFormViewModel>(category);
 
-            return PartialView("_Form",model);
+            return PartialView("_Form", formModel);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(CategoryFormViewModel model)
@@ -82,11 +72,15 @@ namespace Al_Sahaba.Web.Controllers
                 return NotFound();
             }
 
-            category.Name = model.Name;
+            category = _mapper.Map(model, category);
             category.LastUpdatedOn = DateTime.Now;
             _context.SaveChanges();
-            return PartialView("_CategoryRow", category);
+
+            var viewModel = _mapper.Map<CategoryViewModel>(category);
+
+            return PartialView("_CategoryRow", viewModel);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult ToggleStatus(int id)
@@ -100,7 +94,14 @@ namespace Al_Sahaba.Web.Controllers
             category.IsDeleted = !category.IsDeleted;
             category.LastUpdatedOn = DateTime.Now;
             _context.SaveChanges();
+
             return Ok(category.LastUpdatedOn.ToString());
+        }
+        public IActionResult AllowItem(CategoryFormViewModel model)
+        {
+            var category = _context.Categories.SingleOrDefault(m => m.Name == model.Name);
+            var isValid = category is null || model.Id == category.Id;
+            return Json(isValid);
         }
     }
 }
