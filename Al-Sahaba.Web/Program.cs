@@ -1,7 +1,5 @@
 using Al_Sahaba.Web.Core.Mapping;
-using Al_Sahaba.Web.Data;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 namespace Al_Sahaba.Web

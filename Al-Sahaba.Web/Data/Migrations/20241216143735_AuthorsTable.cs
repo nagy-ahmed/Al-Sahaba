@@ -5,13 +5,13 @@
 namespace Al_Sahaba.Web.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class addCategoriesTable : Migration
+    public partial class AuthorsTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Categories",
+                name: "Authors",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -23,15 +23,21 @@ namespace Al_Sahaba.Web.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Categories", x => x.Id);
+                    table.PrimaryKey("PK_Authors", x => x.Id);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Authors_Name",
+                table: "Authors",
+                column: "Name",
+                unique: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Categories");
+                name: "Authors");
         }
     }
 }

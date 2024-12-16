@@ -26,7 +26,7 @@ function showMessage(flag, message) {
 };
 
 function onModalBegin() {
-    $('body :submit').attr('disable', 'disable').attr('data-kt-indicator','on');
+    $('body :submit').attr('disable', 'disable').attr('data-kt-indicator', 'on');
 }
 
 function onModalSuccess(item) {
@@ -43,7 +43,7 @@ function onModalSuccess(item) {
     datatable.row.add(newRow).draw();
 
     KTMenu.init();
-    KTMenu.initGlobalHandlers();
+    KTMenu.initHandlers();
 
 }
 function onModalComplete() {
@@ -90,11 +90,15 @@ var KTDatatables = function () {
                 },
                 {
                     extend: 'excelHtml5',
-                    title: documentTitle
+                    title: documentTitle,
+                    columns: exportedCols
+
                 },
                 {
                     extend: 'csvHtml5',
-                    title: documentTitle
+                    title: documentTitle,
+                    columns: exportedCols
+
                 },
                 {
                     extend: 'pdfHtml5',

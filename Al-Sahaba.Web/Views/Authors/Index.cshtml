@@ -1,8 +1,8 @@
-﻿@model IEnumerable<CategoryViewModel>
+﻿@model IEnumerable<AuthorViewModel>
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery antiforgery
 
 @{
-    ViewData["Title"] = "Categories";
+    ViewData["Title"] = "Authors";
 }
 
 @section Styles
@@ -23,12 +23,12 @@
                 </div>
             </div>
 
-            Categories
+            Authors
         </h3>
     </div>
 
     <div class="card-toolbar">
-        <a class="btn btn-sm btn-primary js-render-modal" data-title="Add Category" data-url="categories/create">
+        <a class="btn btn-sm btn-primary js-render-modal" data-title="Add Author" data-url="authors/create">
             <i class="bi bi-plus-square-dotted"></i>
             Add
         </a>
@@ -39,31 +39,31 @@
 
 
 <div class="card shadow-sm">
-    <partial name="_DataTablesCardHeader"/>
+    <partial name="_DataTablesCardHeader" />
     <div class="card-body pt-0">
 
-            <div class="table-responsive">
-                <table class="table table-row-dashed table-row-gray-300 gy-7 js-datatables" data-document-title="Categories">
-                    <thead>
-                        <tr class="fw-bold fs-6 text-gray-800">
-                            <th>Name</th>
-                            <th>Status</th>
-                            <th>Created On</th>
-                            <th>Last Updated On</th>
-                            <th class="js-no-export">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var category in Model)
-                        {
-                            <partial name="_CategoryRow" model="@category" />
-                        }
-                    </tbody>
-                </table>
-            </div>
+        <div class="table-responsive">
+            <table class="table table-row-dashed table-row-gray-300 gy-7 js-datatables" data-document-title="Authors">
+                <thead>
+                    <tr class="fw-bold fs-6 text-gray-800">
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Created On</th>
+                        <th>Last Updated On</th>
+                        <th class="js-no-export">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var author in Model)
+                    {
+                        <partial name="_AuthorRow" model="@author" />
+                    }
+                </tbody>
+            </table>
+        </div>
 
 
-        
+
     </div>
 </div>
 @* @Html.AntiForgeryToken() *@

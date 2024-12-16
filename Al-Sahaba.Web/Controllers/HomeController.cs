@@ -1,5 +1,3 @@
-using Al_Sahaba.Web.Core.ViewModels;
-using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 namespace Al_Sahaba.Web.Controllers

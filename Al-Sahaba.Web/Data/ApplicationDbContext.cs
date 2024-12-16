@@ -1,6 +1,4 @@
-﻿using Al_Sahaba.Web.Core.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Al_Sahaba.Web.Data
 {
@@ -11,5 +9,6 @@ namespace Al_Sahaba.Web.Data
         {
         }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Author> Authors { get; set; }
     }
 }

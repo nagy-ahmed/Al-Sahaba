@@ -1,7 +1,7 @@
 ﻿namespace Al_Sahaba.Web.Core.Models
 {
     [Index(nameof(Name), IsUnique = true)]
-    public class Category : BaseModel
+    public class Author : BaseModel
     {
         public int Id { get; set; }
         [MaxLength(100)]

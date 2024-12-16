@@ -1,6 +1,6 @@
 ﻿namespace Al_Sahaba.Web.Core.ViewModels
 {
-    public class CategoryViewModel
+    public class AuthorViewModel
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
